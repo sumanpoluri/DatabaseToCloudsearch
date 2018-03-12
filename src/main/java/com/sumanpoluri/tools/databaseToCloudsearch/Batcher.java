@@ -3,9 +3,6 @@ package com.sumanpoluri.tools.databaseToCloudsearch;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-
 /**
  * Batches the documents and invokes the uploader when ready.
  */
@@ -17,7 +14,8 @@ public class Batcher {
      * Maximum 5 MB per batch allowed
      */
     private static final Integer MAX_BATCH_SIZE = 5000000; // in bytes
-    private static final DecimalFormat DF_2_DECIMALS = new DecimalFormat("#0.00");
+    private static final String USE_ASYNC_PARAM = System.getProperty("USE_ASYNC");
+    private static final Boolean USE_ASYNC = USE_ASYNC_PARAM != null && USE_ASYNC_PARAM.trim().equalsIgnoreCase("Y");
 
     //==================================================================================================================
     // Instance fields
@@ -69,7 +67,7 @@ public class Batcher {
             String id,
             JSONObject fields) {
         // Final document. This is to ensure the last document is not missed.
-        if (id == null && getBatchSize(this.batch) > 0) {
+        if (id == null && Utils.getBatchSize(this.batch) > 0) {
             // Upload batch
             uploadBatch(
                     this.batch,
@@ -87,9 +85,9 @@ public class Batcher {
         // Try to get the batch as close to the max allowed size as possible.
         // With a factor of 1.0, there is a risk of going beyond the max allowed size by a few bytes. Tweak this as
         // needed.
-        if (getBatchSize(this.batch) > (MAX_BATCH_SIZE * 0.995)) {
-            if (getBatchSize(this.batch) > MAX_BATCH_SIZE) {
-                if (getBatchSize(this.batchOldVersion) > MAX_BATCH_SIZE) {
+        if (Utils.getBatchSize(this.batch) > (MAX_BATCH_SIZE * 0.995)) {
+            if (Utils.getBatchSize(this.batch) > MAX_BATCH_SIZE) {
+                if (Utils.getBatchSize(this.batchOldVersion) > MAX_BATCH_SIZE) {
                     // Batch is larger than max allowed size even without the last document.
                     // So, sending the batch by excluding the latest document will not help in this case.
                     // No way to send a partial batch. So error.
@@ -132,34 +130,17 @@ public class Batcher {
     private void uploadBatch(
             JSONArray obj,
             Boolean finalCall) {
-        Uploader.uploadBatch(obj);
-        if (finalCall) {
-            Uploader.done();
+        if (USE_ASYNC) {
+            UploaderAsync.uploadBatch(obj);
+        } else {
+            Uploader.uploadBatch(obj);
+            if (finalCall) {
+                Uploader.done();
+            }
         }
 
         batchesUploaded++;
-        documentsUploaded += getNumberOfDocsInBatch(obj);
-        System.out.println("Uploaded batch - size " + DF_2_DECIMALS.format(getBatchSize(obj) / (double) (1024 * 1024)) + " MB, # of documents = " + getNumberOfDocsInBatch(obj) + " documents...");
-    }
-
-    /**
-     * Returns the number of documents in a given batch.
-     *
-     * @param obj The JSONArray object representing the batch
-     * @return An Integer representing the number of documents in the batch
-     */
-    public static Integer getNumberOfDocsInBatch(JSONArray obj) {
-        return obj.length();
-    }
-
-    /**
-     * Returns the size of a given batch.
-     *
-     * @param obj The JSONArray object representing the batch
-     * @return An Integer representing the size of the batch
-     */
-    public static Integer getBatchSize(JSONArray obj) {
-        return obj.toString().getBytes(StandardCharsets.UTF_8).length;
+        documentsUploaded += Utils.getNumberOfDocsInBatch(obj);
     }
 
 }

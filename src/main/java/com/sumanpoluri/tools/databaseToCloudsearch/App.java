@@ -1,5 +1,9 @@
 package com.sumanpoluri.tools.databaseToCloudsearch;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Main class of the program
  */
@@ -13,6 +17,10 @@ public class App
     private static final String DB_USER = System.getProperty("DB_USER");
     private static final String DB_PASSWORD = System.getProperty("DB_PASSWORD");
     private static final String DB_NAME = System.getProperty("DB_NAME");
+    private static final DateFormat DF_FULL = DateFormat.getDateTimeInstance(
+            DateFormat.FULL,
+            DateFormat.FULL,
+            Locale.US);
 
     //==================================================================================================================
     // Main method
@@ -20,7 +28,9 @@ public class App
     public static void main( String[] args )
     {
 
-        System.out.println( "Started..." );
+        System.out.println(
+                DF_FULL.format(new Date()) +
+                        ": Started...");
         long startTime = System.currentTimeMillis();
         ExtractAndUpload extractAndUpload = new ExtractAndUpload(
                 DB_USER,
@@ -31,7 +41,9 @@ public class App
         );
         extractAndUpload.run();
         long endTime = System.currentTimeMillis();
-        System.out.println( "...ended in " + ((endTime-startTime)/1000) + "s.");
+        System.out.println(
+                DF_FULL.format(new Date()) +
+                        ": ...ended in " + ((endTime-startTime)/1000) + "s.");
     }
 
 }

@@ -12,6 +12,7 @@ Use the following VM arguments to provide the necessary values to the program.
 * AWS_SECRET_ACCESS_KEY: Secret Key from the AWS credentials to access AWS resources
 * AWS_CS_DOC_ENDPOINT: Document endpoint for the AWS Cloudsearch domain where data is to be uploaded
 * AWS_SIGNING_REGION: AWS region (For e.g., us-east-1, eu-west-1, etc.) for the corresponding to the AWS Cloudsearch domain
+* USE_ASYNC: Indicates if the asynchronous client needs to be used instead of the default client. Set 'Y' to use asynchronous client, else set 'N' or omit.
 * LOG_DIR: Directory to save the log files (For e.g., /tmp/app/logs/, C:\myapps\logs\, etc.)
 
 ## Notes
