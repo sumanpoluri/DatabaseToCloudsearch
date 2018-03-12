@@ -16,7 +16,7 @@ Use the following VM arguments to provide the necessary values to the program.
 * LOG_DIR: Directory to save the log files (For e.g., /tmp/app/logs/, C:\myapps\logs\, etc.)
 
 ## Notes
-This application simply extracts from a database and uploads to the given AWS Cloudsearch domain. It does not provide methods to do deletes or parallel uploads, although it should be easy to change the code to do that.
+This application simply extracts from a database and uploads to the given AWS Cloudsearch domain. It does not provide methods to do deletes or updates, although it should be easy to change the code to do that.
 
 ## Dependencies
 This application uses the Amazon AWS SDK, AWS Cloudsearch SDK, MySQL Connector and the JSON in Java (org.json) libraries.
